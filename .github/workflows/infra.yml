@@ -1,0 +1,31 @@
+permissions:
+  id-token: write
+  contents: read
+
+name: Role provisioning
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  AWS_REGION : "us-east-1"
+
+jobs:
+  AssumeRoleAndCallIdentity:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Git clone the repository
+        uses: actions/checkout@v4
+
+      - name: configure aws credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: "arn:aws:iam::${{ secrets.ACCOUNT_ID }}:role/labs-eks-foundation-role"
+          role-session-name: GitHub_to_AWS_via_FederatedOIDC
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Sts GetCallerIdentity
+        run: |
+          aws sts get-caller-identity
