@@ -1,0 +1,4 @@
+template-file-path: ./infra/cloudformation/roles.yml
+
+parameters:
+  Repository: "rafaelsvieira/labs-eks-foundation"

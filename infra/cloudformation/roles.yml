@@ -5,10 +5,10 @@ Description: |
   Creates a stack containing an IAM role used to grant access to a repository create resources.
 
 Parameters:
-  AWSAccountID:
+  Repository:
     Type: String
     Description: |
-      Account number of the AWS account to which to grant access.
+      Repository name with organization. For example, rafaelsvieira/labs-eks-foundation.
 
 Resources:
   FoundationRepoRole:
@@ -21,14 +21,14 @@ Resources:
           - Effect: Allow
             Principal:
               Federated:
-                - !Sub "arn:aws:iam::${AWSAccountID}:oidc-provider/token.actions.githubusercontent.com"
+                - !Sub "arn:aws:iam::${AWS::AccountId}:oidc-provider/token.actions.githubusercontent.com"
             Action:
               - sts:AssumeRoleWithWebIdentity
             Condition:
               StringEquals:
                 token.actions.githubusercontent.com:aud: "sts.amazonaws.com"
               StringLike:
-                token.actions.githubusercontent.com:sub: "repo:rafaelsvieira/labs-eks-foundation:*"
+                token.actions.githubusercontent.com:sub: !Sub "repo:${Repository}:*"
       Policies:
         - PolicyName: ManageRole
           PolicyDocument:
@@ -44,8 +44,8 @@ Resources:
                   - "iam:UpdateRole"
                   - "iam:PutRolePolicy"
                 Resource:
-                  - !Sub "arn:aws:iam::${AWSAccountID}:policy/*"
-                  - !Sub "arn:aws:iam::${AWSAccountID}:role/*"
+                  - !Sub "arn:aws:iam::${AWS::AccountId}:policy/*"
+                  - !Sub "arn:aws:iam::${AWS::AccountId}:role/*"
 Outputs:
   RoleId:
     Description: The logical ID of the IAM role
